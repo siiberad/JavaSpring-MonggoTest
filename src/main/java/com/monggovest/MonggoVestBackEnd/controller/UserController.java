@@ -13,8 +13,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/Investor" )
 public class UserController {
+
     @Autowired
     private UserRepository repository;
+
     @Autowired
     private TransactionRepository transactionRepository;
 

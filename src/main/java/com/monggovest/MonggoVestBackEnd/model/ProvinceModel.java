@@ -1,23 +1,16 @@
 package com.monggovest.MonggoVestBackEnd.model;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "province")
 public class ProvinceModel {
 
     @Id
-    @NotNull
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Long provinceId;
 
-    @NotNull
-    @JsonIgnore
     private String provinceName;
 
     public ProvinceModel() {}

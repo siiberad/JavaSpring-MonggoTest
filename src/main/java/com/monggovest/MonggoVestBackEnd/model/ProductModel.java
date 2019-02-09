@@ -1,7 +1,6 @@
 package com.monggovest.MonggoVestBackEnd.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -45,7 +44,6 @@ public class ProductModel extends AuditModel {
         this.productId = productId;
     }
 
-    @JsonIgnore
     public String getProductName() {
         return productName;
     }
@@ -53,7 +51,7 @@ public class ProductModel extends AuditModel {
     public void setProductName(String productName) {
         this.productName = productName;
     }
-    @JsonIgnore
+
     public String getProductPrice() {
         return productPrice;
     }

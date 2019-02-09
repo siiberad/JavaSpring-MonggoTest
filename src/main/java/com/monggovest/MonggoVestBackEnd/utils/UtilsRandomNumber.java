@@ -21,6 +21,4 @@ public class UtilsRandomNumber {
         }
         return new String(returnValue);
     }
-
-
 }

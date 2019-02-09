@@ -1,4 +1,4 @@
-package com.monggovest.MonggoVestBackEnd.service.in;
+package com.monggovest.MonggoVestBackEnd.service;
 
 public interface MailService {
 

@@ -25,16 +25,15 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public Optional<ProductModel>find(@PathVariable("productName") Long productId){
+    public Optional<ProductModel>find(@PathVariable("productId") Long productId){
         return productRepository.findById(productId);
     }
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping(consumes="application/json")
+    @PostMapping(consumes = "application/json")
     public ProductModel create(@RequestBody ProductModel model){
         return productRepository.save(model);
     }
 
-    @DeleteMapping (path = "/{productId}")
+    @DeleteMapping ("/{productId}")
     public void delete(@PathVariable("productId") Long productId) {productRepository.deleteById(productId);}
 
     @PutMapping("/{productId}")
