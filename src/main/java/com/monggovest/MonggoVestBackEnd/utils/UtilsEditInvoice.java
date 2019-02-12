@@ -1,80 +1,241 @@
 package com.monggovest.MonggoVestBackEnd.utils;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
+import com.monggovest.MonggoVestBackEnd.model.AuditModel;
+import com.monggovest.MonggoVestBackEnd.model.TransactionModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 @Component
-public class UtilsEditInvoice {
+public class UtilsEditInvoice{
 
-    public void writePdf(OutputStream outputStream) throws Exception {
+    public void writeInv(OutputStream outputStream, TransactionModel transactionModel) throws Exception {
         Document document = new Document();
         PdfWriter.getInstance(document, outputStream);
 
-//        Image image = Image.getInstance ("src/pdf/java4s.png");
-//        image.scaleAbsolute(120f, 60f);//image width,height
+        //Inserting Image in PDF
+//        Image image = Image.getInstance ("src/resources/logo.jpg");//Header Image
+//        image.scaleAbsolute(540f, 72f);//image width,height
 
-        //Inserting Table in PDF
-        PdfPTable table=new PdfPTable(3);
+        PdfPTable irdTable = new PdfPTable(2);
+        irdTable.addCell(getIRDCell("Invoice No"));
+        irdTable.addCell(getIRDCell("Invoice Date"));
+        irdTable.addCell(getIRDCell(transactionModel.getTrxInvoiceNum())); // pass invoice number
+        irdTable.addCell(getPdfDate()); // pass invoice date
 
-        PdfPCell cell = new PdfPCell (new Paragraph ("Java4s.com"));
+        PdfPTable irhTable = new PdfPTable(3);
+        irhTable.setWidthPercentage(100);
 
-        cell.setColspan (3);
-        cell.setHorizontalAlignment (Element.ALIGN_CENTER);
-        cell.setPadding (10.0f);
-        cell.setBackgroundColor (new BaseColor(140, 221, 8));
+        irhTable.addCell(getIRHCell("", PdfPCell.ALIGN_RIGHT));
+        irhTable.addCell(getIRHCell("", PdfPCell.ALIGN_RIGHT));
+        irhTable.addCell(getIRHCell("Invoice", PdfPCell.ALIGN_RIGHT));
+        irhTable.addCell(getIRHCell("", PdfPCell.ALIGN_RIGHT));
+        irhTable.addCell(getIRHCell("", PdfPCell.ALIGN_RIGHT));
+        PdfPCell invoiceTable = new PdfPCell (irdTable);
+        invoiceTable.setBorder(0);
+        irhTable.addCell(invoiceTable);
 
-        table.addCell(cell);
+        FontSelector fs = new FontSelector();
+        Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN, 13, Font.BOLD);
+        fs.addFont(font);
+        Phrase bill = fs.process("Bill To"); // customer information
+        Paragraph name = new Paragraph("Mr.Venkateswara Rao");
+        name.setIndentationLeft(20);
+        Paragraph contact = new Paragraph("9652886877");
+        contact.setIndentationLeft(20);
+        Paragraph address = new Paragraph("Kuchipudi,Movva");
+        address.setIndentationLeft(20);
 
-        table.addCell("Name");
-        table.addCell("Address");
-        table.addCell("Country");
-        table.addCell("Java4s");
-        table.addCell("NC");
-        table.addCell("United States");
-        table.setSpacingBefore(30.0f);       // Space Before table starts, like margin-top in CSS
-        table.setSpacingAfter(30.0f);        // Space After table starts, like margin-Bottom in CSS
+        PdfPTable billTable = new PdfPTable(6); //one page contains 15 records
+        billTable.setWidthPercentage(100);
+        billTable.setWidths(new float[] { 1, 2,5,2,1,2 });
+        billTable.setSpacingBefore(30.0f);
+        billTable.addCell(getBillHeaderCell("Index"));
+        billTable.addCell(getBillHeaderCell("Item"));
+        billTable.addCell(getBillHeaderCell("Description"));
+        billTable.addCell(getBillHeaderCell("Unit Price"));
+        billTable.addCell(getBillHeaderCell("Qty"));
+        billTable.addCell(getBillHeaderCell("Amount"));
 
-        //Inserting List in PDF
-//        List list=new List(true,30);
-//        list.add(new ListItem("Java4s"));
-//        list.add(new ListItem("Php4s"));
-//        list.add(new ListItem("Some Thing..."));
+        billTable.addCell(getBillRowCell("1"));
+        billTable.addCell(getBillRowCell("Mobile"));
+        billTable.addCell(getBillRowCell("Nokia Lumia 610 \n IMI:WQ361989213 "));
+        billTable.addCell(getBillRowCell("12000.0"));
+        billTable.addCell(getBillRowCell("1"));
+        billTable.addCell(getBillRowCell("12000.0"));
 
-        //Text formating in PDF
-        Chunk chunk=new Chunk("Welecome To Java4s Programming Blog...");
-        chunk.setUnderline(+1f,-2f);//1st co-ordinate is for line width,2nd is space between
-        Chunk chunk1=new Chunk("Php4s.com");
-        chunk1.setUnderline(+4f,-8f);
-        chunk1.setBackground(new BaseColor (17, 46, 193));
+        billTable.addCell(getBillRowCell("2"));
+        billTable.addCell(getBillRowCell("Accessories"));
+        billTable.addCell(getBillRowCell("Nokia Lumia 610 Panel \n Serial:TIN3720 "));
+        billTable.addCell(getBillRowCell("200.0"));
+        billTable.addCell(getBillRowCell("1"));
+        billTable.addCell(getBillRowCell("200.0"));
 
-        //Now Insert Every Thing Into PDF Document
+
+        billTable.addCell(getBillRowCell("3"));
+        billTable.addCell(getBillRowCell("Other"));
+        billTable.addCell(getBillRowCell("16Gb Memorycard \n Serial:UR8531 "));
+        billTable.addCell(getBillRowCell("420.0"));
+        billTable.addCell(getBillRowCell("1"));
+        billTable.addCell(getBillRowCell("420.0"));
+
+
+        PdfPTable validity = new PdfPTable(1);
+        validity.setWidthPercentage(100);
+        validity.addCell(getValidityCell(" "));
+        validity.addCell(getValidityCell("Warranty"));
+        validity.addCell(getValidityCell(" * Products purchased comes with 1 year national warranty \n   (if applicable)"));
+        validity.addCell(getValidityCell(" * Warranty should be claimed only from the respective manufactures"));
+        PdfPCell summaryL = new PdfPCell (validity);
+        summaryL.setColspan (3);
+        summaryL.setPadding (1.0f);
+        billTable.addCell(summaryL);
+
+        PdfPTable accounts = new PdfPTable(2);
+        accounts.setWidthPercentage(100);
+        accounts.addCell(getAccountsCell("Subtotal"));
+        accounts.addCell(getAccountsCellR("12620.00"));
+        accounts.addCell(getAccountsCell("Discount (10%)"));
+        accounts.addCell(getAccountsCellR("1262.00"));
+        accounts.addCell(getAccountsCell("Tax(2.5%)"));
+        accounts.addCell(getAccountsCellR("315.55"));
+        accounts.addCell(getAccountsCell("Total"));
+        accounts.addCell(getAccountsCellR("11673.55"));
+        PdfPCell summaryR = new PdfPCell (accounts);
+        summaryR.setColspan (3);
+        billTable.addCell(summaryR);
+
+        PdfPTable describer = new PdfPTable(1);
+        describer.setWidthPercentage(100);
+        describer.addCell(getdescCell(" "));
+        describer.addCell(getdescCell("Goods once sold will not be taken back or exchanged || Subject to product justification || Product damage no one responsible || "
+                + " Service only at concarned authorized service centers"));
+
         document.open();//PDF document opened........
 
 //        document.add(image);
-
-        document.add(Chunk.NEWLINE);   //Something like in HTML 🙂
-
-        document.add(new Paragraph("Dear Java4s.com"));
-        document.add(new Paragraph("Document Generated On - "+new Date().toString()));
-
-        document.add(table);
-
-        document.add(chunk);
-        document.add(chunk1);
-
-        document.add(Chunk.NEWLINE);   //Something like in HTML 🙂
-
-//        document.newPage();            //Opened new page
-//        document.add(list);            //In the new page we are going to add list
+        document.add(irhTable);
+        document.add(bill);
+        document.add(name);
+        document.add(contact);
+        document.add(address);
+        document.add(billTable);
+        document.add(describer);
 
         document.close();
     }
 
+    public static PdfPCell getIRHCell(String text, int alignment) {
+        FontSelector fs = new FontSelector();
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 16);
+        /*	font.setColor(BaseColor.GRAY);*/
+        fs.addFont(font);
+        Phrase phrase = fs.process(text);
+        PdfPCell cell = new PdfPCell(phrase);
+        cell.setPadding(5);
+        cell.setHorizontalAlignment(alignment);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
+    }
+
+    public static PdfPCell getIRDCell(String text) {
+        PdfPCell cell = new PdfPCell (new Paragraph (text));
+        cell.setHorizontalAlignment (Element.ALIGN_CENTER);
+        cell.setPadding (5.0f);
+        cell.setBorderColor(BaseColor.LIGHT_GRAY);
+        cell.setBorderWidth(30);
+        return cell;
+    }
+    private String getPdfDate () {
+        Date date = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String strDate = dateFormat.format(date);
+        return strDate;
+    }
+
+    public static PdfPCell getBillHeaderCell(String text) {
+        FontSelector fs = new FontSelector();
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 11);
+        font.setColor(BaseColor.GRAY);
+        fs.addFont(font);
+        Phrase phrase = fs.process(text);
+        PdfPCell cell = new PdfPCell (phrase);
+        cell.setHorizontalAlignment (Element.ALIGN_CENTER);
+        cell.setPadding (5.0f);
+        return cell;
+    }
+
+    public static PdfPCell getBillRowCell(String text) {
+        PdfPCell cell = new PdfPCell (new Paragraph (text));
+        cell.setHorizontalAlignment (Element.ALIGN_CENTER);
+        cell.setPadding (5.0f);
+        cell.setBorderWidthBottom(0);
+        cell.setBorderWidthTop(0);
+        return cell;
+    }
+
+    public static PdfPCell getBillFooterCell(String text) {
+        PdfPCell cell = new PdfPCell (new Paragraph (text));
+        cell.setHorizontalAlignment (Element.ALIGN_CENTER);
+        cell.setPadding (5.0f);
+        cell.setBorderWidthBottom(0);
+        cell.setBorderWidthTop(0);
+        return cell;
+    }
+
+    public static PdfPCell getValidityCell(String text) {
+        FontSelector fs = new FontSelector();
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        font.setColor(BaseColor.GRAY);
+        fs.addFont(font);
+        Phrase phrase = fs.process(text);
+        PdfPCell cell = new PdfPCell (phrase);
+        cell.setBorder(0);
+        return cell;
+    }
+
+    public static PdfPCell getAccountsCell(String text) {
+        FontSelector fs = new FontSelector();
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        fs.addFont(font);
+        Phrase phrase = fs.process(text);
+        PdfPCell cell = new PdfPCell (phrase);
+        cell.setBorderWidthRight(0);
+        cell.setBorderWidthTop(0);
+        cell.setPadding (5.0f);
+        return cell;
+    }
+    public static PdfPCell getAccountsCellR(String text) {
+        FontSelector fs = new FontSelector();
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        fs.addFont(font);
+        Phrase phrase = fs.process(text);
+        PdfPCell cell = new PdfPCell (phrase);
+        cell.setBorderWidthLeft(0);
+        cell.setBorderWidthTop(0);
+        cell.setHorizontalAlignment (Element.ALIGN_RIGHT);
+        cell.setPadding (5.0f);
+        cell.setPaddingRight(20.0f);
+        return cell;
+    }
+
+    public static PdfPCell getdescCell(String text) {
+        FontSelector fs = new FontSelector();
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        font.setColor(BaseColor.GRAY);
+        fs.addFont(font);
+        Phrase phrase = fs.process(text);
+        PdfPCell cell = new PdfPCell (phrase);
+        cell.setHorizontalAlignment (Element.ALIGN_CENTER);
+        cell.setBorder(0);
+        return cell;
+    }
 
 }

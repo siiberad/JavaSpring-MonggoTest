@@ -12,13 +12,12 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @ComponentScan
 public class AppConfig {
 
-	//Put Other Application configuration here.
 
 	@Bean
 	public JavaMailSender getMailSender(){
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-		//Using gmail.
+		//Using gmail
 		mailSender.setHost("smtp.gmail.com");
 		mailSender.setPort(587);
 		mailSender.setUsername("mvestplus@gmail.com");

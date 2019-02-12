@@ -25,10 +25,11 @@ public abstract class AuditModel implements Serializable {
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(
             shape = JsonFormat.Shape.STRING,
             pattern = "dd-MM-yyyy hh:mm:ss")
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at",  nullable = false)
     @LastModifiedDate
     private Date updatedAt;
@@ -47,5 +48,13 @@ public abstract class AuditModel implements Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "AuditModel{" +
+                "createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

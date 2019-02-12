@@ -1,7 +1,6 @@
 package com.monggovest.MonggoVestBackEnd.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -13,6 +12,7 @@ public class BankModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Long bankId;
 
+    @JsonIgnore
     private String bankName;
 
     public BankModel() {}
@@ -30,7 +30,6 @@ public class BankModel {
         this.bankId = bankId;
     }
 
-    @JsonProperty
     public String getBankName() {
         return bankName;
     }

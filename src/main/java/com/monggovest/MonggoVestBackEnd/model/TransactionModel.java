@@ -1,6 +1,7 @@
 package com.monggovest.MonggoVestBackEnd.model;
 
 import com.fasterxml.jackson.annotation.*;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -38,6 +39,7 @@ public class TransactionModel extends AuditModel{
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "productId")
     @JsonProperty
+    @JsonIgnoreProperties(value = {"productName","productPrice", "provinceModel"}, allowGetters = false)
     private ProductModel productModel;
 
     public Long getTrxId() {

@@ -5,15 +5,12 @@ import com.monggovest.MonggoVestBackEnd.model.TransactionModel;
 import com.monggovest.MonggoVestBackEnd.model.UserModel;
 import com.monggovest.MonggoVestBackEnd.repository.TransactionRepository;
 import com.monggovest.MonggoVestBackEnd.repository.UserRepository;
-//import com.monggovest.MonggoVestBackEnd.service.MailService;
 import com.monggovest.MonggoVestBackEnd.service.MailService;
 import com.monggovest.MonggoVestBackEnd.utils.UtilsRandomNumber;
 import com.monggovest.MonggoVestBackEnd.utils.UtilsDate;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -56,8 +53,4 @@ public class TransactionController {
                 }
         ).orElseThrow(() -> new ResourceNotFoundException("User ID " + userId + " not found"));
     }
-
-
-
-
 }

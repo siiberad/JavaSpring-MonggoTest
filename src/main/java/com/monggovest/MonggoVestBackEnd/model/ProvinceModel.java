@@ -1,5 +1,7 @@
 package com.monggovest.MonggoVestBackEnd.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 
@@ -11,6 +13,7 @@ public class ProvinceModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Long provinceId;
 
+    @JsonIgnore
     private String provinceName;
 
     public ProvinceModel() {}
