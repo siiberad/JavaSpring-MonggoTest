@@ -20,15 +20,17 @@ public class UtilsEditInvoice{
         Document document = new Document();
         PdfWriter.getInstance(document, outputStream);
 
-        //Inserting Image in PDF
-//        Image image = Image.getInstance ("src/resources/logo.jpg");//Header Image
-//        image.scaleAbsolute(540f, 72f);//image width,height
+        Image image = Image.getInstance ("src/main/resources/logo.png");
+        image.setAlignment (Element.ALIGN_LEFT);
+        image.scaleAbsolute(160f, 42f);
 
         PdfPTable irdTable = new PdfPTable(2);
+        irdTable.setWidthPercentage(100);
+        irdTable.setWidths(new float[] { 5,3 });
         irdTable.addCell(getIRDCell("Invoice No"));
         irdTable.addCell(getIRDCell("Invoice Date"));
-        irdTable.addCell(getIRDCell(transactionModel.getTrxInvoiceNum())); // pass invoice number
-        irdTable.addCell(getPdfDate()); // pass invoice date
+        irdTable.addCell(getIRDCell(transactionModel.getTrxInvoiceNum()));
+        irdTable.addCell(getPdfDate());
 
         PdfPTable irhTable = new PdfPTable(3);
         irhTable.setWidthPercentage(100);
@@ -45,54 +47,34 @@ public class UtilsEditInvoice{
         FontSelector fs = new FontSelector();
         Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN, 13, Font.BOLD);
         fs.addFont(font);
-        Phrase bill = fs.process("Bill To"); // customer information
-        Paragraph name = new Paragraph("Mr.Venkateswara Rao");
-        name.setIndentationLeft(20);
-        Paragraph contact = new Paragraph("9652886877");
-        contact.setIndentationLeft(20);
-        Paragraph address = new Paragraph("Kuchipudi,Movva");
-        address.setIndentationLeft(20);
+        Phrase bill = fs.process("Bill To");
+        Paragraph name = new Paragraph("Name    : "+transactionModel.getUserModel().getUserName());
+        name.setIndentationLeft(15);
+        Paragraph email = new Paragraph("Email    : "+transactionModel.getUserModel().getUserEmail());
+        email.setIndentationLeft(15);
+        Paragraph trx = new Paragraph("Transaction Number    : "+transactionModel.getTrxInvoiceNum());
+        trx.setIndentationLeft(15);
 
-        PdfPTable billTable = new PdfPTable(6); //one page contains 15 records
+
+        PdfPTable billTable = new PdfPTable(5);
         billTable.setWidthPercentage(100);
-        billTable.setWidths(new float[] { 1, 2,5,2,1,2 });
+        billTable.setWidths(new float[] { 3,4,2,3,2 });
         billTable.setSpacingBefore(30.0f);
-        billTable.addCell(getBillHeaderCell("Index"));
-        billTable.addCell(getBillHeaderCell("Item"));
+        billTable.addCell(getBillHeaderCell("Product Name"));
         billTable.addCell(getBillHeaderCell("Description"));
-        billTable.addCell(getBillHeaderCell("Unit Price"));
-        billTable.addCell(getBillHeaderCell("Qty"));
+        billTable.addCell(getBillHeaderCell("Unit Price per Lot"));
+        billTable.addCell(getBillHeaderCell("Jumlah Lot"));
         billTable.addCell(getBillHeaderCell("Amount"));
 
-        billTable.addCell(getBillRowCell("1"));
-        billTable.addCell(getBillRowCell("Mobile"));
-        billTable.addCell(getBillRowCell("Nokia Lumia 610 \n IMI:WQ361989213 "));
-        billTable.addCell(getBillRowCell("12000.0"));
-        billTable.addCell(getBillRowCell("1"));
-        billTable.addCell(getBillRowCell("12000.0"));
-
-        billTable.addCell(getBillRowCell("2"));
-        billTable.addCell(getBillRowCell("Accessories"));
-        billTable.addCell(getBillRowCell("Nokia Lumia 610 Panel \n Serial:TIN3720 "));
-        billTable.addCell(getBillRowCell("200.0"));
-        billTable.addCell(getBillRowCell("1"));
-        billTable.addCell(getBillRowCell("200.0"));
-
-
-        billTable.addCell(getBillRowCell("3"));
-        billTable.addCell(getBillRowCell("Other"));
-        billTable.addCell(getBillRowCell("16Gb Memorycard \n Serial:UR8531 "));
-        billTable.addCell(getBillRowCell("420.0"));
-        billTable.addCell(getBillRowCell("1"));
-        billTable.addCell(getBillRowCell("420.0"));
+        billTable.addCell(getBillRowCell("Sapi Penggemukan Irlandia"));
+        billTable.addCell(getBillRowCell("Description"));
+        billTable.addCell(getBillRowCell("Rp.500.000"));
+        billTable.addCell(getBillRowCell("{Jumlah Lot}"));
+        billTable.addCell(getBillRowCell("{Total}"));
 
 
         PdfPTable validity = new PdfPTable(1);
         validity.setWidthPercentage(100);
-        validity.addCell(getValidityCell(" "));
-        validity.addCell(getValidityCell("Warranty"));
-        validity.addCell(getValidityCell(" * Products purchased comes with 1 year national warranty \n   (if applicable)"));
-        validity.addCell(getValidityCell(" * Warranty should be claimed only from the respective manufactures"));
         PdfPCell summaryL = new PdfPCell (validity);
         summaryL.setColspan (3);
         summaryL.setPadding (1.0f);
@@ -100,14 +82,10 @@ public class UtilsEditInvoice{
 
         PdfPTable accounts = new PdfPTable(2);
         accounts.setWidthPercentage(100);
-        accounts.addCell(getAccountsCell("Subtotal"));
-        accounts.addCell(getAccountsCellR("12620.00"));
-        accounts.addCell(getAccountsCell("Discount (10%)"));
-        accounts.addCell(getAccountsCellR("1262.00"));
-        accounts.addCell(getAccountsCell("Tax(2.5%)"));
-        accounts.addCell(getAccountsCellR("315.55"));
+        accounts.addCell(getAccountsCell("Tax"));
+        accounts.addCell(getAccountsCellR("000"));
         accounts.addCell(getAccountsCell("Total"));
-        accounts.addCell(getAccountsCellR("11673.55"));
+        accounts.addCell(getAccountsCellR("000"));
         PdfPCell summaryR = new PdfPCell (accounts);
         summaryR.setColspan (3);
         billTable.addCell(summaryR);
@@ -115,17 +93,16 @@ public class UtilsEditInvoice{
         PdfPTable describer = new PdfPTable(1);
         describer.setWidthPercentage(100);
         describer.addCell(getdescCell(" "));
-        describer.addCell(getdescCell("Goods once sold will not be taken back or exchanged || Subject to product justification || Product damage no one responsible || "
-                + " Service only at concarned authorized service centers"));
+        describer.addCell(getdescCell("+82123 0000 0000 || MONGGO VEST PLUS || Invest Barokah"));
 
         document.open();//PDF document opened........
 
-//        document.add(image);
+        document.add(image);
         document.add(irhTable);
         document.add(bill);
         document.add(name);
-        document.add(contact);
-        document.add(address);
+        document.add(email);
+        document.add(trx);
         document.add(billTable);
         document.add(describer);
 
@@ -149,21 +126,22 @@ public class UtilsEditInvoice{
         PdfPCell cell = new PdfPCell (new Paragraph (text));
         cell.setHorizontalAlignment (Element.ALIGN_CENTER);
         cell.setPadding (5.0f);
-        cell.setBorderColor(BaseColor.LIGHT_GRAY);
-        cell.setBorderWidth(30);
         return cell;
     }
     private String getPdfDate () {
         Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy ");
         String strDate = dateFormat.format(date);
+
+        PdfPCell cell = new PdfPCell (new Paragraph (strDate));
+        cell.setHorizontalAlignment (Element.ALIGN_RIGHT);
+        cell.setPadding (2.0f);
         return strDate;
     }
 
     public static PdfPCell getBillHeaderCell(String text) {
         FontSelector fs = new FontSelector();
-        Font font = FontFactory.getFont(FontFactory.HELVETICA, 11);
-        font.setColor(BaseColor.GRAY);
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 11, Font.BOLD);
         fs.addFont(font);
         Phrase phrase = fs.process(text);
         PdfPCell cell = new PdfPCell (phrase);
